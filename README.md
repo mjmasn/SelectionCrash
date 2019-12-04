@@ -1,5 +1,7 @@
 # React Native `TextInput` selection issues
 
+**Update:** Possible workaround: https://github.com/mjmasn/SelectionCrash/pull/1
+
 Repro steps:
 
 1. Clone this repo
