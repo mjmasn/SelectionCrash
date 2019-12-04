@@ -17,14 +17,15 @@ import {
 } from 'react-native';
 
 class App extends React.Component {
+  selection = {
+    start: 0,
+    end: 0,
+  };
   constructor(props) {
     super(props);
 
     this.state = {
-      selection: {
-        start: 0,
-        end: 0,
-      },
+      selection: undefined,
       value: '',
     };
   }
@@ -36,14 +37,22 @@ class App extends React.Component {
   };
 
   onSelectionChange = event => {
-    this.setState({
-      selection: event.nativeEvent.selection,
-    });
+    const {selection} = event.nativeEvent;
+    this.selection = selection;
+    this.setState(
+      {
+        selection,
+      },
+      () => {
+        this.setState({
+          selection: undefined,
+        });
+      },
+    );
   };
 
   insert = text => {
-    const {selection} = this.state;
-    const {start, end} = selection;
+    const {start, end} = this.selection;
 
     this.setState(oldState => ({
       value: oldState.value.slice(0, start) + text + oldState.value.slice(end),
