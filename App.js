@@ -8,106 +8,110 @@
 
 import React from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
+  TextInput,
+  TouchableOpacity,
   StatusBar,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+    this.state = {
+      selection: {
+        start: 0,
+        end: 0,
+      },
+      value: '',
+    };
+  }
+
+  onChangeText = value => {
+    this.setState({
+      value,
+    });
+  };
+
+  onSelectionChange = event => {
+    this.setState({
+      selection: event.nativeEvent.selection,
+    });
+  };
+
+  insert = text => {
+    const {selection} = this.state;
+    const {start, end} = selection;
+
+    this.setState(oldState => ({
+      value: oldState.value.slice(0, start) + text + oldState.value.slice(end),
+      selection: {
+        start: start + text.length,
+        end: start + text.length,
+      },
+    }));
+  };
+
+  render() {
+    const {selection, value} = this.state;
+
+    const emojis = ['👨‍👩‍👧‍👦', '🧙‍♂️', '🥶', '😊', '👍🏻', '🦀'];
+
+    return (
+      <>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.container}>
+          <View style={styles.emojis}>
+            {emojis.map(emoji => (
+              <TouchableOpacity
+                style={styles.emoji}
+                key={emoji}
+                onPress={() => {
+                  this.insert(emoji);
+                }}>
+                <Text style={styles.emojiText}>{emoji}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+          <TextInput
+            style={styles.input}
+            value={value}
+            selection={selection}
+            onChangeText={this.onChangeText}
+            onSelectionChange={this.onSelectionChange}
+            placeholder="Add some text"
+          />
+        </View>
+      </>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    alignItems: 'stretch',
+    justifyContent: 'center',
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
+  input: {
+    fontSize: 16,
+    padding: 8,
+    backgroundColor: '#eee',
   },
-  body: {
-    backgroundColor: Colors.white,
+  emojis: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 8,
+    marginVertical: 24,
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  emoji: {
+    padding: 8,
   },
-  sectionTitle: {
+  emojiText: {
     fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 });
 
